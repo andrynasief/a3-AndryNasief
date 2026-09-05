@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang='en'>
+
+<head>
+  <title>CS4241 Assignment 2 - Jersey Collection</title>
+  <meta charset='utf-8' />
+  <link rel='preconnect' href='https://fonts.googleapis.com' />
+  <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
+  <link href='https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500&display=swap'
+    rel='stylesheet' />
+  <link rel='stylesheet' href='css/main.css' />
+
+  <link rel='icon' type='image/svg+xml' href='favicon.svg' />
+</head>
+
+<body>
+  <h1 id='page-title'>Jersey Collection</h1>
+
+  <form id='jersey-form'>
+    <input type='text' id='team' name='team' placeholder='Team' required />
+    <input type='text' id='player' name='player' placeholder='Player' required />
+    <input type='number' id='number' name='number' placeholder='Number' min='0' max='99' required />
+
+    <select id='size' name='size' required>
+      <option value='' disabled selected>Size</option>
+      <option value='S'>S</option>
+      <option value='M'>M</option>
+      <option value='L'>L</option>
+      <option value='XL'>XL</option>
+    </select>
+
+    <input type='number' id='price' name='price' placeholder='Price' min='0' step='0.01' required />
+
+    <button type='submit'>Add Jersey</button>
+  </form>
+
+  <section id='jersey-container' class='card-grid'></section>
+
+  <script src='js/main.js'></script>
+</body>
+
+</html>

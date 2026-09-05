@@ -1,0 +1,15 @@
+{
+  "name": "a2-AndryNasief",
+  "version": "1.0.0",
+  "description": "A2 - Jersey Collection Mgmt App",
+  "author": "Andry",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "mime": "^2.4.4"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

@@ -1,0 +1,177 @@
+/* ---------------------------------------------------------
+   COLOR PALETTE
+   #14141c   page background (near-black navy)
+   #1f1f2e   card / form background
+   #8b7cf6   primary accent (violet) - buttons, links, highlights
+   #f2f2f7   primary text (off-white)
+   #9a9ab0   secondary text / borders / disabled state
+   --------------------------------------------------------- */
+
+:root {
+  --color-bg: #14141c;
+  --color-surface: #1f1f2e;
+  --color-accent: #8b7cf6;
+  --color-text: #f2f2f7;
+  --color-muted: #9a9ab0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', Arial, sans-serif;
+  margin: 0;
+  padding: 2rem;
+}
+
+h1,
+h3 {
+  font-family: 'Poppins', Arial, sans-serif;
+  margin: 0 0 0.5rem 0;
+}
+
+h3{
+  font-size: 1.1rem;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin-bottom: 0.25rem;
+}
+
+input,
+select {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-muted);
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 0.9rem;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+button {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.1rem;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+p {
+  margin: 0.25rem 0;
+}
+
+#page-title {
+  color: var(--color-text);
+  letter-spacing: 0.5px;
+}
+
+#jersey-form {
+  background: var(--color-surface);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+#jersey-container {
+  margin-top: 1.5rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.jersey-card {
+  background: var(--color-surface);
+  border: 1px solid rgba(139, 124, 246, 0.25);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.jersey-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-accent);
+}
+
+.jersey-player {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.jersey-meta {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.jersey-sku {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+.jersey-card-editing {
+  gap: 0.5rem;
+}
+
+.jersey-card-editing input,
+.jersey-card-editing select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.edit-button,
+.delete-button,
+.cancel-button {
+  background: transparent;
+  color: var(--color-muted);
+  border: 1px solid var(--color-muted);
+  padding: 0.4rem 0.7rem;
+}
+
+.edit-button:hover,
+.delete-button:hover,
+.cancel-button:hover {
+  color: var(--color-text);
+  border-color: var(--color-text);
+  opacity: 1;
+}
+
+.save-button {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
