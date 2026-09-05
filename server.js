@@ -1,13 +1,26 @@
-const http = require( 'http' )
-const fs = require( 'fs' )
+require( 'dotenv' ).config( { quiet: true } )
+
+const express = require( 'express' )
+const session = require( 'express-session' )
+const bcrypt = require( 'bcryptjs' )
 const path = require( 'path' )
+const { MongoClient } = require( 'mongodb' )
 
 const PORT = process.env.PORT || 3000
+const MONGODB_URI = process.env.MONGODB_URI
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-only-secret-change-me'
+
+if ( !MONGODB_URI ) {
+  console.error( 'Missing MONGODB_URI — add it to a .env file (see .env.example).' )
+  process.exit( 1 )
+}
+
+const app = express()
+const client = new MongoClient( MONGODB_URI )
 const PUBLIC_DIR = path.join( __dirname, 'public' )
 
-let nextId = 1
-
-let jerseys = []
+let jerseysCollection
+let usersCollection
 
 const addDerivedFields = function( jersey ) {
   const teamCode = ( jersey.team || '' ).trim().substring( 0, 3 ).toUpperCase()
@@ -16,107 +29,161 @@ const addDerivedFields = function( jersey ) {
   return Object.assign( {}, jersey, { sku } )
 }
 
-// sample stock
-const seedData = [
-  { team: 'Barcelona Home', player: 'Lamine', number: 10, size: 'S', price: 25 },
-  { team: 'Barcelona Away', player: 'Raphinha', number: 11, size: 'M', price: 30 },
-  { team: 'Man United 3rd', player: 'No Name', number: 0, size: 'L', price: 30 },
-  { team: 'Juventus Away', player: 'No Name', number: 0, size: 'XL', price: 25 },
-]
+// finds the next free numeric id (scoped per-user, since each user's
+// jersey list is effectively its own collection of ids) — keeps ids
+// short and readable instead of using MongoDB's own ObjectId
+const getNextId = async function( owner ) {
+  const last = await jerseysCollection.find( { owner } ).sort( { id: -1 } ).limit( 1 ).toArray()
+  return last.length ? last[ 0 ].id + 1 : 1
+}
 
-seedData.forEach( row => {
-  jerseys.push( addDerivedFields( Object.assign( { id: nextId++ }, row ) ) )
+const getJerseysForOwner = async function( owner ) {
+  return jerseysCollection.find( { owner } ).sort( { id: 1 } ).project( { _id: 0 } ).toArray()
+}
+
+app.use( express.json() )
+app.use( session({
+  secret: SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}))
+
+// require a logged-in session for the API routes below
+const requireAuth = function( req, res, next ) {
+  if ( !req.session.user ) {
+    res.status( 401 ).json( { error: 'Not logged in' } )
+    return
+  }
+  next()
+}
+
+// --- auth routes ---
+
+app.post( '/login', async ( req, res ) => {
+  const { username, password } = req.body
+
+  if ( !username || !password ) {
+    res.status( 400 ).json( { error: 'Username and password are required.' } )
+    return
+  }
+
+  const existingUser = await usersCollection.findOne( { username } )
+
+  // no account with this username yet — create one automatically,
+  // and tell the client so it can alert the user to that fact
+  if ( !existingUser ) {
+    const passwordHash = await bcrypt.hash( password, 10 )
+    await usersCollection.insertOne( { username, passwordHash } )
+    req.session.user = username
+    res.json( { username, newAccount: true } )
+    return
+  }
+
+  const passwordMatches = await bcrypt.compare( password, existingUser.passwordHash )
+
+  if ( !passwordMatches ) {
+    res.status( 401 ).json( { error: 'Incorrect password.' } )
+    return
+  }
+
+  req.session.user = username
+  res.json( { username, newAccount: false } )
 })
 
-const sendJSON = function( res, status, data ) {
-  res.writeHead( status, { 'Content-Type': 'application/json' } )
-  res.end( JSON.stringify( data ) )
-}
+app.post( '/logout', ( req, res ) => {
+  req.session.destroy( () => {
+    res.json( { success: true } )
+  })
+})
 
-const CONTENT_TYPES = {
-  '.html': 'text/html',
-  '.css': 'text/css',
-  '.js': 'text/javascript',
-  '.svg': 'image/svg+xml'
-}
+app.get( '/me', requireAuth, ( req, res ) => {
+  res.json( { username: req.session.user } )
+})
 
-const serveFile = function( res, filePath ) {
-  const ext = path.extname( filePath )
-  fs.readFile( filePath, ( err, content ) => {
-    if ( err ) {
-      res.writeHead( 404 )
-      res.end( 'Not found' )
-      return
-    }
-    res.writeHead( 200, { 'Content-Type': CONTENT_TYPES[ ext ] || 'text/plain' } )
-    res.end( content )
+// --- page routes (guard index.html behind a session) ---
+
+app.get( '/', ( req, res ) => {
+  if ( !req.session.user ) {
+    res.redirect( '/login.html' )
+    return
+  }
+  res.sendFile( path.join( PUBLIC_DIR, 'index.html' ) )
+})
+
+app.get( '/index.html', ( req, res ) => {
+  if ( !req.session.user ) {
+    res.redirect( '/login.html' )
+    return
+  }
+  res.sendFile( path.join( PUBLIC_DIR, 'index.html' ) )
+})
+
+app.get( '/login.html', ( req, res ) => {
+  if ( req.session.user ) {
+    res.redirect( '/' )
+    return
+  }
+  res.sendFile( path.join( PUBLIC_DIR, 'login.html' ) )
+})
+
+// css/, js/, favicon.svg etc — index.html and login.html are handled
+// above so the routes can check the session first
+app.use( express.static( PUBLIC_DIR, { index: false } ) )
+
+// --- jersey API routes (all scoped to the logged-in user) ---
+
+app.get( '/jerseys', requireAuth, async ( req, res ) => {
+  res.json( await getJerseysForOwner( req.session.user ) )
+})
+
+app.post( '/submit', requireAuth, async ( req, res ) => {
+  const owner = req.session.user
+  const id = await getNextId( owner )
+  const withId = Object.assign( { id, owner }, req.body )
+  const withDerived = addDerivedFields( withId )
+
+  await jerseysCollection.insertOne( withDerived )
+  res.json( await getJerseysForOwner( owner ) )
+})
+
+app.put( '/jerseys/:id', requireAuth, async ( req, res ) => {
+  const owner = req.session.user
+  const id = parseInt( req.params.id )
+  const existing = await jerseysCollection.findOne( { id, owner } )
+
+  if ( !existing ) {
+    res.status( 404 ).json( { error: 'Jersey not found' } )
+    return
+  }
+
+  const updated = addDerivedFields( Object.assign( {}, existing, req.body, { id, owner } ) )
+  delete updated._id
+
+  await jerseysCollection.updateOne( { id, owner }, { $set: updated } )
+  res.json( await getJerseysForOwner( owner ) )
+})
+
+app.delete( '/jerseys/:id', requireAuth, async ( req, res ) => {
+  const owner = req.session.user
+  const id = parseInt( req.params.id )
+  await jerseysCollection.deleteOne( { id, owner } )
+  res.json( await getJerseysForOwner( owner ) )
+})
+
+const start = async function() {
+  await client.connect()
+  console.log( 'Connected to MongoDB Atlas' )
+
+  const db = client.db( 'jerseys' )
+  jerseysCollection = db.collection( 'jerseys' )
+  usersCollection = db.collection( 'users' )
+
+  app.listen( PORT, () => {
+    console.log( `Server running at http://localhost:${PORT}` )
   })
 }
 
-const readBody = function( req ) {
-  return new Promise( resolve => {
-    let body = ''
-    req.on( 'data', chunk => body += chunk )
-    req.on( 'end', () => resolve( body ) )
-  })
-}
-
-const server = http.createServer( async ( req, res ) => {
-  const url = req.url
-
-  if ( req.method === 'GET' && url === '/jerseys' ) {
-    sendJSON( res, 200, jerseys )
-    return
-  }
-
-  // add a new jersey
-  if ( req.method === 'POST' && url === '/submit' ) {
-    const body = await readBody( req )
-    const incoming = JSON.parse( body )
-    const withId = Object.assign( { id: nextId++ }, incoming )
-    const withDerived = addDerivedFields( withId )
-
-    jerseys.push( withDerived )
-    sendJSON( res, 200, jerseys )
-    return
-  }
-
-  // edit an existing jersey's fields
-  if ( req.method === 'PUT' && url.startsWith( '/jerseys/' ) ) {
-    const id = parseInt( url.split( '/' )[ 2 ] )
-    const body = await readBody( req )
-    const updates = JSON.parse( body )
-
-    jerseys = jerseys.map( jersey => {
-      if ( jersey.id !== id ) return jersey
-      return addDerivedFields( Object.assign( {}, jersey, updates, { id } ) )
-    })
-
-    sendJSON( res, 200, jerseys )
-    return
-  }
-
-  // delete a jersey by id
-  if ( req.method === 'DELETE' && url.startsWith( '/jerseys/' ) ) {
-    const id = parseInt( url.split( '/' )[ 2 ] )
-    jerseys = jerseys.filter( jersey => jersey.id !== id )
-    sendJSON( res, 200, jerseys )
-    return
-  }
-
-  // everything else is served as a static file out of public
-  const requestedPath = url === '/' ? '/index.html' : url
-  const filePath = path.join( PUBLIC_DIR, requestedPath )
-
-  if ( !filePath.startsWith( PUBLIC_DIR ) ) {
-    res.writeHead( 403 )
-    res.end( 'Forbidden' )
-    return
-  }
-
-  serveFile( res, filePath )
-})
-
-server.listen( PORT, () => {
-  console.log( `Server running at http://localhost:${PORT}` )
+start().catch( err => {
+  console.error( 'Failed to start server:', err.message )
+  process.exit( 1 )
 })

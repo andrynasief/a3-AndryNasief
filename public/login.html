@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang='en'>
+
+<head>
+    <title>Log in — Jersey Collection</title>
+    <meta charset='utf-8' />
+    <link rel='preconnect' href='https://fonts.googleapis.com' />
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
+    <link href='https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500&display=swap'
+        rel='stylesheet' />
+    <link rel='stylesheet' href='css/main.css' />
+
+    <link rel='icon' type='image/svg+xml' href='favicon.svg' />
+</head>
+
+<body>
+    <div id='login-page'>
+        <h1 id='page-title'>Jersey Collection</h1>
+        <p id='login-hint'>Log in with any username and password. If that username doesn't exist yet, an account is
+            created for you automatically.</p>
+
+        <form id='login-form'>
+            <input type='text' id='username' name='username' placeholder='Username' required />
+            <input type='password' id='password' name='password' placeholder='Password' required />
+            <button type='submit'>Log in</button>
+        </form>
+
+        <p id='login-message' role='alert'></p>
+    </div>
+
+    <script src='js/login.js'></script>
+</body>
+
+</html>

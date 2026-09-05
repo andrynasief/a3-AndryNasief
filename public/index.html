@@ -14,7 +14,13 @@
 </head>
 
 <body>
-  <h1 id='page-title'>Jersey Collection</h1>
+  <div id='app-header'>
+    <h1 id='page-title'>Jersey Collection</h1>
+    <div id='session-info'>
+      <span id='current-username'></span>
+      <button id='logout-button' type='button'>Log out</button>
+    </div>
+  </div>
 
   <form id='jersey-form'>
     <input type='text' id='team' name='team' placeholder='Team' required />
@@ -27,6 +33,7 @@
       <option value='M'>M</option>
       <option value='L'>L</option>
       <option value='XL'>XL</option>
+      <option value='XXL'>XXL</option>
     </select>
 
     <input type='number' id='price' name='price' placeholder='Price' min='0' step='0.01' required />

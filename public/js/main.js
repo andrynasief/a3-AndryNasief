@@ -1,4 +1,7 @@
-// reminder { id, team, player, number, size, price, sku }
+// FRONT-END (CLIENT) JAVASCRIPT HERE
+
+// each jersey object returned by the server looks like:
+// { id, team, player, number, size, price, sku }
 
 let jerseysData = []
 let editingId = null
@@ -8,6 +11,7 @@ class JerseyCard {
     this.jersey = jersey
   }
 
+  // normal read-only view of the jersey
   render() {
     const card = document.createElement( 'div' )
     card.className = 'jersey-card'
@@ -57,6 +61,7 @@ class JerseyCard {
     return card
   }
 
+  // editable form for this jersey's fields, shown in place of render()
   renderEdit() {
     const card = document.createElement( 'div' )
     card.className = 'jersey-card jersey-card-editing'
@@ -81,7 +86,7 @@ class JerseyCard {
     card.appendChild( numberInput )
 
     const sizeSelect = document.createElement( 'select' )
-    ;[ 'S', 'M', 'L', 'XL' ].forEach( size => {
+    ;[ 'S', 'M', 'L', 'XL', 'XXL' ].forEach( size => {
       const option = document.createElement( 'option' )
       option.value = size
       option.textContent = size
@@ -142,11 +147,19 @@ const renderJerseys = function( jerseys ) {
 
 const loadJerseys = async function() {
   const response = await fetch( '/jerseys' )
+
+  if ( response.status === 401 ) {
+    window.location.href = '/login.html'
+    return
+  }
+
   const jerseys = await response.json()
   renderJerseys( jerseys )
 }
 
 const submit = async function( event ) {
+  // stop form submission from trying to load
+  // a new .html page for displaying results
   event.preventDefault()
 
   const json = {
@@ -157,39 +170,101 @@ const submit = async function( event ) {
     price: document.querySelector( '#price' ).value
   }
 
-  const response = await fetch( '/submit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify( json )
-  })
+  try {
+    const response = await fetch( '/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify( json )
+    })
 
-  const jerseys = await response.json()
-  renderJerseys( jerseys )
+    if ( response.status === 401 ) {
+      window.location.href = '/login.html'
+      return
+    }
 
-  event.target.reset()
+    if ( !response.ok ) {
+      console.error( 'Failed to add jersey:', response.status )
+      return
+    }
+
+    const jerseys = await response.json()
+    renderJerseys( jerseys )
+    event.target.reset()
+  } catch ( err ) {
+    console.error( 'Error adding jersey:', err )
+  }
 }
 
 const saveEdit = async function( id, updates ) {
-  const response = await fetch( `/jerseys/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify( updates )
-  })
+  try {
+    const response = await fetch( `/jerseys/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify( updates )
+    })
 
-  const jerseys = await response.json()
-  editingId = null
-  renderJerseys( jerseys )
+    if ( response.status === 401 ) {
+      window.location.href = '/login.html'
+      return
+    }
+
+    if ( !response.ok ) {
+      console.error( 'Failed to save jersey:', response.status )
+      return
+    }
+
+    const jerseys = await response.json()
+    editingId = null
+    renderJerseys( jerseys )
+  } catch ( err ) {
+    console.error( 'Error saving jersey:', err )
+  }
 }
 
 const removeJersey = async function( id ) {
-  const response = await fetch( `/jerseys/${id}`, { method: 'DELETE' } )
-  const jerseys = await response.json()
-  renderJerseys( jerseys )
+  try {
+    const response = await fetch( `/jerseys/${id}`, { method: 'DELETE' } )
+
+    if ( response.status === 401 ) {
+      window.location.href = '/login.html'
+      return
+    }
+
+    if ( !response.ok ) {
+      console.error( 'Failed to delete jersey:', response.status )
+      return
+    }
+
+    const jerseys = await response.json()
+    renderJerseys( jerseys )
+  } catch ( err ) {
+    console.error( 'Error deleting jersey:', err )
+  }
+}
+
+const loadSession = async function() {
+  const response = await fetch( '/me' )
+
+  if ( response.status === 401 ) {
+    window.location.href = '/login.html'
+    return
+  }
+
+  const session = await response.json()
+  document.querySelector( '#current-username' ).textContent = `Logged in as ${session.username}`
+}
+
+const logout = async function() {
+  await fetch( '/logout', { method: 'POST' } )
+  window.location.href = '/login.html'
 }
 
 window.onload = function() {
   const form = document.querySelector( '#jersey-form' )
   form.onsubmit = submit
 
+  document.querySelector( '#logout-button' ).onclick = logout
+
+  loadSession()
   loadJerseys()
 }
