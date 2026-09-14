@@ -2,7 +2,7 @@ require( 'dotenv' ).config( { quiet: true } )
 
 const express = require( 'express' )
 const session = require( 'express-session' )
-const MongoStore = require( 'connect-mongo' )
+const { MongoStore } = require( 'connect-mongo' )
 const bcrypt = require( 'bcryptjs' )
 const path = require( 'path' )
 const { MongoClient } = require( 'mongodb' )
