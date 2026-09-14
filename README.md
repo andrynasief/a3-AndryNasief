@@ -1,6 +1,7 @@
 # Jersey Collection
 
 Live site: https://a3-andrynasief.onrender.com/
+Dummy Account in `.env.example`
 
 This is a two tier web app where each user keeps a personal list of jerseys. You log in, then you can add, edit, and delete jerseys tied to your own account. Nobody sees anyone else's collection. Data is stored in MongoDB so it stays around between server restarts.
 
