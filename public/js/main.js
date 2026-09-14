@@ -1,7 +1,4 @@
-// FRONT-END (CLIENT) JAVASCRIPT HERE
-
-// each jersey object returned by the server looks like:
-// { id, team, player, number, size, price, sku }
+// each jersey object: { id, team, player, number, size, price, sku }
 
 let jerseysData = []
 let editingId = null
@@ -11,7 +8,6 @@ class JerseyCard {
     this.jersey = jersey
   }
 
-  // normal read-only view of the jersey
   render() {
     const col = document.createElement( 'div' )
     col.className = 'col-12 col-sm-6 col-lg-4'
@@ -68,7 +64,6 @@ class JerseyCard {
     return col
   }
 
-  // editable form for this jersey's fields, shown in place of render()
   renderEdit() {
     const col = document.createElement( 'div' )
     col.className = 'col-12 col-sm-6 col-lg-4'
@@ -181,8 +176,6 @@ const loadJerseys = async function() {
 }
 
 const submit = async function( event ) {
-  // stop form submission from trying to load
-  // a new .html page for displaying results
   event.preventDefault()
 
   const json = {

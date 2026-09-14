@@ -30,9 +30,6 @@ const addDerivedFields = function( jersey ) {
   return Object.assign( {}, jersey, { sku } )
 }
 
-// finds the next free numeric id (scoped per-user, since each user's
-// jersey list is effectively its own collection of ids) — keeps ids
-// short and readable instead of using MongoDB's own ObjectId
 const getNextId = async function( owner ) {
   const last = await jerseysCollection.find( { owner } ).sort( { id: -1 } ).limit( 1 ).toArray()
   return last.length ? last[ 0 ].id + 1 : 1
@@ -57,7 +54,6 @@ app.use( session({
   }
 }))
 
-// require a logged-in session for the API routes below
 const requireAuth = function( req, res, next ) {
   if ( !req.session.user ) {
     res.status( 401 ).json( { error: 'Not logged in' } )
@@ -65,8 +61,6 @@ const requireAuth = function( req, res, next ) {
   }
   next()
 }
-
-// --- auth routes ---
 
 app.post( '/login', async ( req, res ) => {
   const { username, password } = req.body
@@ -78,8 +72,7 @@ app.post( '/login', async ( req, res ) => {
 
   const existingUser = await usersCollection.findOne( { username } )
 
-  // no account with this username yet — create one automatically,
-  // and tell the client so it can alert the user to that fact
+
   if ( !existingUser ) {
     const passwordHash = await bcrypt.hash( password, 10 )
     await usersCollection.insertOne( { username, passwordHash } )
@@ -109,7 +102,6 @@ app.get( '/me', requireAuth, ( req, res ) => {
   res.json( { username: req.session.user } )
 })
 
-// --- page routes (guard index.html behind a session) ---
 
 app.get( '/', ( req, res ) => {
   if ( !req.session.user ) {
@@ -135,11 +127,7 @@ app.get( '/login.html', ( req, res ) => {
   res.sendFile( path.join( PUBLIC_DIR, 'login.html' ) )
 })
 
-// css/, js/, favicon.svg etc — index.html and login.html are handled
-// above so the routes can check the session first
 app.use( express.static( PUBLIC_DIR, { index: false } ) )
-
-// --- jersey API routes (all scoped to the logged-in user) ---
 
 app.get( '/jerseys', requireAuth, async ( req, res ) => {
   res.json( await getJerseysForOwner( req.session.user ) )

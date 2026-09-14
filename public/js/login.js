@@ -1,5 +1,3 @@
-// FRONT-END (CLIENT) JAVASCRIPT FOR THE LOGIN PAGE
- 
 const showMessage = function( text ) {
   document.querySelector( '#login-message' ).textContent = text
 }

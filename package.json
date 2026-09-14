@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/andrynasief/a3-AndryNasief.git"
   },
-  "homepage": "https://REPLACE-WITH-YOUR-RENDER-URL.onrender.com",
+  "homepage": "https://a3-andrynasief.onrender.com/",
   "scripts": {
     "start": "node server.js",
     "test-db": "node test-connection.js"

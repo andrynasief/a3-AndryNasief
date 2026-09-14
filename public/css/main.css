@@ -1,17 +1,3 @@
-/* =========================================================
-   Bootstrap 5 does the bulk of the styling/layout here.
-   This file only re-themes Bootstrap's CSS variables to match
-   the app's dark / violet look, plus a few small custom touches
-   (fonts, card hover, monospace SKU) that Bootstrap doesn't
-   provide out of the box.
-   ---------------------------------------------------------
-   #14141c   page background (near-black navy)
-   #1f1f2e   card / form background
-   #8b7cf6   primary accent (violet) - buttons, links, highlights
-   #f2f2f7   primary text (off-white)
-   #9a9ab0   secondary text / borders / disabled state
-   ========================================================= */
-
 [data-bs-theme='dark'] {
   --bs-body-bg: #14141c;
   --bs-body-color: #f2f2f7;
@@ -41,11 +27,6 @@ h3,
   font-family: 'Poppins', Arial, sans-serif;
 }
 
-/* Bootstrap's default focus ring uses --bs-primary already,
-   so form controls pick up the violet accent automatically. */
-
-/* ---------- jersey cards ---------- */
-
 .jersey-card {
   transition: transform 0.15s ease, border-color 0.15s ease;
   display: flex;
@@ -66,7 +47,27 @@ h3,
   margin-top: auto;
 }
 
-/* ---------- login page ---------- */
+.btn-outline-secondary {
+  --bs-btn-color: #c6c6d6;
+  --bs-btn-border-color: #c6c6d6;
+  --bs-btn-hover-color: #14141c;
+  --bs-btn-hover-bg: #c6c6d6;
+  --bs-btn-hover-border-color: #c6c6d6;
+  --bs-btn-active-color: #14141c;
+  --bs-btn-active-bg: #c6c6d6;
+  --bs-btn-active-border-color: #c6c6d6;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: #ff9494;
+  --bs-btn-border-color: #ff9494;
+  --bs-btn-hover-color: #14141c;
+  --bs-btn-hover-bg: #ff9494;
+  --bs-btn-hover-border-color: #ff9494;
+  --bs-btn-active-color: #14141c;
+  --bs-btn-active-bg: #ff9494;
+  --bs-btn-active-border-color: #ff9494;
+}
 
 #login-page {
   max-width: 340px;
