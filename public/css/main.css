@@ -1,243 +1,80 @@
 /* =========================================================
-   COLOR PALETTE — dark theme, 5 colors total
+   Bootstrap 5 does the bulk of the styling/layout here.
+   This file only re-themes Bootstrap's CSS variables to match
+   the app's dark / violet look, plus a few small custom touches
+   (fonts, card hover, monospace SKU) that Bootstrap doesn't
+   provide out of the box.
    ---------------------------------------------------------
-   --color-bg      #14141c   page background (near-black navy)
-   --color-surface #1f1f2e   card / form background
-   --color-accent  #8b7cf6   primary accent (violet) - buttons, links, highlights
-   --color-text    #f2f2f7   primary text (off-white)
-   --color-muted   #9a9ab0   secondary text / borders / disabled state
+   #14141c   page background (near-black navy)
+   #1f1f2e   card / form background
+   #8b7cf6   primary accent (violet) - buttons, links, highlights
+   #f2f2f7   primary text (off-white)
+   #9a9ab0   secondary text / borders / disabled state
    ========================================================= */
 
-:root {
-  --color-bg: #14141c;
-  --color-surface: #1f1f2e;
-  --color-accent: #8b7cf6;
-  --color-text: #f2f2f7;
-  --color-muted: #9a9ab0;
+[data-bs-theme='dark'] {
+  --bs-body-bg: #14141c;
+  --bs-body-color: #f2f2f7;
+  --bs-secondary-color: #9a9ab0;
+  --bs-border-color: #33334a;
+  --bs-tertiary-bg: #1f1f2e;
+
+  --bs-primary: #8b7cf6;
+  --bs-primary-rgb: 139, 124, 246;
+  --bs-link-color: #8b7cf6;
+  --bs-link-hover-color: #a79bf8;
+
+  --bs-card-bg: #1f1f2e;
+  --bs-card-border-color: rgba(139, 124, 246, 0.25);
+
+  --bs-form-control-bg: #1f1f2e;
 }
 
-/* ---------- element selectors ---------- */
-
 body {
-  background: var(--color-bg);
-  color: var(--color-text);
   font-family: 'Inter', Arial, sans-serif;
-  margin: 0;
-  padding: 2rem;
 }
 
 h1,
-h3 {
+h3,
+.h3,
+.h5 {
   font-family: 'Poppins', Arial, sans-serif;
-  margin: 0 0 0.5rem 0;
 }
 
-form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 0.75rem;
-}
+/* Bootstrap's default focus ring uses --bs-primary already,
+   so form controls pick up the violet accent automatically. */
 
-label {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--color-muted);
-  margin-bottom: 0.25rem;
-}
+/* ---------- jersey cards ---------- */
 
-input,
-select {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-muted);
-  border-radius: 6px;
-  padding: 0.5rem;
-  font-family: 'Inter', Arial, sans-serif;
-  font-size: 0.9rem;
-}
-
-input:focus,
-select:focus {
-  outline: none;
-  border-color: var(--color-accent);
-}
-
-button {
-  background: var(--color-accent);
-  color: var(--color-bg);
-  border: none;
-  border-radius: 6px;
-  padding: 0.6rem 1.1rem;
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-button:hover {
-  opacity: 0.85;
-}
-
-p {
-  margin: 0.25rem 0;
-}
-
-/* ---------- id selectors ---------- */
-
-#page-title {
-  color: var(--color-text);
-  letter-spacing: 0.5px;
-}
-
-#jersey-form {
-  background: var(--color-surface);
-  border-radius: 10px;
-  padding: 1.25rem;
-  margin: 1.5rem 0;
-}
-
-#jersey-container {
-  margin-top: 1.5rem;
-}
-
-/* ---------- class selectors ---------- */
-
-/* layout for the collection of cards — CSS grid */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-/* the container for each individual jersey object */
 .jersey-card {
-  background: var(--color-surface);
-  border: 1px solid rgba(139, 124, 246, 0.25);
-  border-radius: 10px;
-  padding: 1rem;
+  transition: transform 0.15s ease, border-color 0.15s ease;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  transition: transform 0.15s ease, border-color 0.15s ease;
 }
 
 .jersey-card:hover {
   transform: translateY(-3px);
-  border-color: var(--color-accent);
-}
-
-.jersey-player {
-  color: var(--color-text);
-  font-weight: 500;
-}
-
-.jersey-meta {
-  color: var(--color-muted);
-  font-size: 0.85rem;
+  border-color: var(--bs-primary);
 }
 
 .jersey-sku {
-  color: var(--color-muted);
-  font-size: 0.75rem;
   font-family: monospace;
   letter-spacing: 0.5px;
 }
 
-.jersey-card-editing {
-  gap: 0.5rem;
-}
-
-.jersey-card-editing input,
-.jersey-card-editing select {
-  width: 100%;
-  box-sizing: border-box;
-}
-
 .card-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.edit-button,
-.delete-button,
-.cancel-button {
-  background: transparent;
-  color: var(--color-muted);
-  border: 1px solid var(--color-muted);
-  padding: 0.4rem 0.7rem;
-}
-
-.edit-button:hover,
-.delete-button:hover,
-.cancel-button:hover {
-  color: var(--color-text);
-  border-color: var(--color-text);
-  opacity: 1;
-}
-
-.save-button {
-  background: var(--color-accent);
-  color: var(--color-bg);
-}
-
-/* ---------- app header (title + session info) ---------- */
-
-#app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-#session-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.85rem;
-  color: var(--color-muted);
-}
-
-#logout-button {
-  background: transparent;
-  color: var(--color-muted);
-  border: 1px solid var(--color-muted);
-  padding: 0.4rem 0.8rem;
-}
-
-#logout-button:hover {
-  color: var(--color-text);
-  border-color: var(--color-text);
-  opacity: 1;
+  margin-top: auto;
 }
 
 /* ---------- login page ---------- */
 
 #login-page {
-  max-width: 320px;
-  margin: 3rem auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  text-align: center;
-}
-
-#login-hint {
-  color: var(--color-muted);
-  font-size: 0.85rem;
-}
-
-#login-form {
-  flex-direction: column;
-  align-items: stretch;
-  background: var(--color-surface);
-  border-radius: 10px;
-  padding: 1.25rem;
+  max-width: 340px;
+  margin-top: 4rem;
 }
 
 #login-message {
-  color: var(--color-accent);
+  color: var(--bs-primary);
   font-size: 0.85rem;
   min-height: 1.2em;
 }
