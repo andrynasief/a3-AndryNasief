@@ -2,6 +2,7 @@ require( 'dotenv' ).config( { quiet: true } )
 
 const express = require( 'express' )
 const session = require( 'express-session' )
+const MongoStore = require( 'connect-mongo' )
 const bcrypt = require( 'bcryptjs' )
 const path = require( 'path' )
 const { MongoClient } = require( 'mongodb' )
@@ -45,7 +46,15 @@ app.use( express.json() )
 app.use( session({
   secret: SESSION_SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: MONGODB_URI,
+    dbName: 'jerseys',
+    collectionName: 'sessions'
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+  }
 }))
 
 // require a logged-in session for the API routes below
