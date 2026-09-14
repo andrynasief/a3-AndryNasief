@@ -29,42 +29,44 @@
       </div>
     </header>
 
-    <form id='jersey-form' class='card p-3 mb-4'>
-      <div class='row g-2 align-items-end'>
-        <div class='col-6 col-md-2'>
-          <label for='team' class='form-label'>Team</label>
-          <input type='text' class='form-control' id='team' name='team' required />
+    <main>
+      <form id='jersey-form' class='card p-3 mb-4'>
+        <div class='row g-2 align-items-end'>
+          <div class='col-6 col-md-2'>
+            <label for='team' class='form-label'>Team</label>
+            <input type='text' class='form-control' id='team' name='team' required />
+          </div>
+          <div class='col-6 col-md-2'>
+            <label for='player' class='form-label'>Player</label>
+            <input type='text' class='form-control' id='player' name='player' required />
+          </div>
+          <div class='col-6 col-md-2'>
+            <label for='number' class='form-label'>Number</label>
+            <input type='number' class='form-control' id='number' name='number' min='0' max='99' required />
+          </div>
+          <div class='col-6 col-md-2'>
+            <label for='size' class='form-label'>Size</label>
+            <select id='size' name='size' class='form-select' required>
+              <option value='' disabled selected>Choose…</option>
+              <option value='S'>S</option>
+              <option value='M'>M</option>
+              <option value='L'>L</option>
+              <option value='XL'>XL</option>
+              <option value='XXL'>XXL</option>
+            </select>
+          </div>
+          <div class='col-6 col-md-2'>
+            <label for='price' class='form-label'>Price</label>
+            <input type='number' class='form-control' id='price' name='price' min='0' step='0.01' required />
+          </div>
+          <div class='col-6 col-md-2'>
+            <button type='submit' class='btn btn-primary w-100'>Add Jersey</button>
+          </div>
         </div>
-        <div class='col-6 col-md-2'>
-          <label for='player' class='form-label'>Player</label>
-          <input type='text' class='form-control' id='player' name='player' required />
-        </div>
-        <div class='col-6 col-md-2'>
-          <label for='number' class='form-label'>Number</label>
-          <input type='number' class='form-control' id='number' name='number' min='0' max='99' required />
-        </div>
-        <div class='col-6 col-md-2'>
-          <label for='size' class='form-label'>Size</label>
-          <select id='size' name='size' class='form-select' required>
-            <option value='' disabled selected>Choose…</option>
-            <option value='S'>S</option>
-            <option value='M'>M</option>
-            <option value='L'>L</option>
-            <option value='XL'>XL</option>
-            <option value='XXL'>XXL</option>
-          </select>
-        </div>
-        <div class='col-6 col-md-2'>
-          <label for='price' class='form-label'>Price</label>
-          <input type='number' class='form-control' id='price' name='price' min='0' step='0.01' required />
-        </div>
-        <div class='col-6 col-md-2'>
-          <button type='submit' class='btn btn-primary w-100'>Add Jersey</button>
-        </div>
-      </div>
-    </form>
+      </form>
 
-    <section id='jersey-container' class='row g-3'></section>
+      <section id='jersey-container' class='row g-3'></section>
+    </main>
   </div>
 
   <script src='js/main.js'></script>

@@ -1,4 +1,5 @@
-// each jersey object: { id, team, player, number, size, price, sku }
+// each jersey object returned by the server looks like:
+// { id, team, player, number, size, price, sku }
 
 let jerseysData = []
 let editingId = null
@@ -16,7 +17,7 @@ class JerseyCard {
     const card = document.createElement( 'div' )
     card.className = 'card jersey-card h-100 p-3'
 
-    const title = document.createElement( 'h3' )
+    const title = document.createElement( 'h2' )
     title.className = 'h5 mb-1'
     title.textContent = `${this.jersey.team} #${this.jersey.number}`
     card.appendChild( title )
